@@ -1,6 +1,6 @@
 mod parser;
 use nom::{bytes::complete::tag, multi::separated_list0};
-use parser::{Conditional, Op, OptionProd, Test};
+use parser::{Op, OptionProd, Test};
 
 fn main() {
     let input = include_str!("real.text");
@@ -28,18 +28,11 @@ fn main() {
                 }
                 // new_item /= 3;
                 let Test::Div(div) = &monkeys[ind].test;
-                let mut id = 0;
-                if new_item % div == 0 {
-                    match &monkeys[ind].cond_true {
-                        Conditional::True(n) => id = *n,
-                        Conditional::False(_) => (),
-                    }
+                let id = if new_item % div == 0 {
+                    monkeys[ind].cond_true.unwrap()
                 } else {
-                    match &monkeys[ind].cond_false {
-                        Conditional::True(_) => (),
-                        Conditional::False(n) => id = *n,
-                    }
-                }
+                    monkeys[ind].cond_false.unwrap()
+                };
                 new_item %= common_denom;
                 move_ind.push(id);
                 new_values.push(new_item);
